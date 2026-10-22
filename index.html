@@ -30,7 +30,7 @@ if (matchMedia('(pointer: coarse)').matches) document.documentElement.classList.
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 /* 整頁不捲，只有頁首下方的內容區自己捲 */
 html,body{margin:0;height:100%;overflow:hidden;overscroll-behavior:none}
-body{background:var(--bg) radial-gradient(circle at 20% 0,#3a2a22 0,transparent 45%) fixed;color:var(--ink);font-family:"Noto Sans TC",system-ui,sans-serif;}
+body{background:radial-gradient(circle at 20% 0,#3a2a22 0,transparent 45%) 0 0/100vw 100vh no-repeat var(--bg);color:var(--ink);font-family:"Noto Sans TC",system-ui,sans-serif;}
 body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.07;
   background:repeating-conic-gradient(from 0deg at 50% 0,#fff 0 3deg,transparent 3deg 12deg);}
 .wrap{padding:0}
@@ -38,10 +38,9 @@ body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.07;
 #main{position:fixed;top:calc(var(--hh,200px) - 26px);left:0;right:0;bottom:0;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
   padding:26px 16px calc(28px + env(safe-area-inset-bottom))}
 .scroller,.list{max-width:1100px;margin:0 auto}
-/* 頁首：釘選在上；底色＝整頁背景（光芒＋暖光），捲上去的內容在頁首底部淡化消失 */
+/* 頁首：固定在上；背景與整頁同一張圖、同尺寸（不用 fixed，避免 Chrome 遮罩＋固定背景錯位），捲上去的內容在底部淡化消失 */
 header{text-align:center;padding:max(10px,env(safe-area-inset-top)) 16px 24px;position:fixed;top:0;left:0;right:0;z-index:20;
-  background:repeating-conic-gradient(from 0deg at 50% 0,rgba(255,255,255,.07) 0 3deg,transparent 3deg 12deg),radial-gradient(circle at 20% 0,#3a2a22 0,transparent 45%),var(--bg);
-  background-attachment:fixed,fixed;
+  background:repeating-conic-gradient(from 0deg at 50% 0,rgba(255,255,255,.07) 0 3deg,transparent 3deg 12deg) 0 0/100vw 100vh no-repeat,radial-gradient(circle at 20% 0,#3a2a22 0,transparent 45%) 0 0/100vw 100vh no-repeat,var(--bg);
   -webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 20px),transparent);mask-image:linear-gradient(to bottom,#000 calc(100% - 26px),transparent)}
 .views{margin-bottom:4px}
 .logo{font-family:Bungee,sans-serif;font-size:clamp(19px,6.4vw,48px);color:var(--gold);letter-spacing:1px;
@@ -60,7 +59,7 @@ html:not(.tz) .legend .pinch{display:none}
 /* 觸控：頁面不捲，#main 自己捲；時間表等比縮放 */
 .tz{--ppm:2.4px}
 .tz,.tz body{touch-action:pan-x pan-y}
-.tz header{padding:max(10px,env(safe-area-inset-top)) 12px 22px;background-attachment:scroll,scroll}
+.tz header{padding:max(10px,env(safe-area-inset-top)) 12px 22px}
 .tz #main{touch-action:pan-x pan-y;padding-inline:12px}
 .tz .sizer{position:relative;margin:0 auto}
 .tz .board{position:absolute;left:0;top:0;width:780px;transform-origin:0 0}
@@ -84,11 +83,8 @@ html:not(.tz) .legend .pinch{display:none}
   font-weight:900;line-height:1.15;overflow:hidden;transition:transform .12s, box-shadow .2s}
 button.blk{font:inherit;font-weight:900;cursor:pointer}
 button.blk:hover,button.blk:focus-visible{transform:scale(1.04);z-index:3;outline:none}
-.blk .nm{font-size:15px;word-break:break-word}
+.blk .nm{font-size:15px;white-space:nowrap;line-height:1.15}
 .blk.small .nm{font-size:10px}
-.blk.long .nm{font-size:12.5px}
-.blk.xlong .nm{font-size:11px}
-.blk .ft{display:block;font-size:10px;font-weight:700;opacity:.95}
 .blk .tm{font-size:10.5px;font-weight:500;margin-top:2px;opacity:.95}
 .blk.off{cursor:default;opacity:.92}
 .blk.want{border-color:#fff6c9;box-shadow:0 0 0 2px var(--gold),0 0 18px 6px rgba(242,193,78,.85);animation:glow 1.6s ease-in-out infinite;z-index:2}
@@ -172,7 +168,17 @@ const START = 11*60, END = 22*60;
 const $ = s => document.querySelector(s);
 const mins = t => { const [h,m] = t.split(':').map(Number); return h*60+m; };
 const fmt = v => v >= 1e8 ? (v/1e8).toFixed(1)+' 億' : v >= 1e4 ? Math.round(v/1e4)+' 萬' : v.toLocaleString();
-const dispName = n => { const [a,b] = n.split(' ft. '); return b ? `${a}<span class="ft">ft. ${b}</span>` : a; };
+/* 團名換行照海報；沒列的就一行 */
+const BREAKS = {
+  "こっちのけんと Kocchi no Kento": ["こっちのけんと", "Kocchi no Kento"],
+  "血肉果汁機 Flesh Juicer": ["血肉果汁機", "Flesh Juicer"],
+  "Srirajah Rockers ft. Leo王": ["Srirajah Rockers", "ft. Leo王"],
+  "大象體操 ft. someshiit 山姆": ["大象體操", "ft. someshiit 山姆"],
+  "溫蒂漫步 ft. JABBERLOOP": ["溫蒂漫步", "ft. JABBERLOOP"],
+  "A_Root同根生 X 三牲獻藝 ft. 柔米": ["A_Root同根生", "X 三牲獻藝 ft. 柔米"],
+  "YaMon Social Club 壓滿俱樂部": ["YaMon Social Club", "壓滿俱樂部"],
+};
+const dispName = n => (BREAKS[n] || [n]).join('<br>');
 const key = it => it.day+'|'+it.name;
 let want = new Set();
 try { want = new Set(JSON.parse(localStorage.getItem('vf26-want') || '[]')); } catch(e) {}
@@ -194,7 +200,7 @@ function render(){
       const clickable = it.vids && it.vids.length;
       const tag = clickable ? 'button' : 'div';
       const disp = it.label || dispName(it.name);
-      const cls = ['blk', clickable?'':'off', it.small?'small':'', (!it.label && it.name.split(' ft. ')[0].length > 14)?'xlong':(!it.label && it.name.split(' ft. ')[0].length > 10)?'long':'', want.has(key(it))?'want':''].join(' ');
+      const cls = ['blk', clickable?'':'off', it.small?'small':'', want.has(key(it))?'want':''].join(' ');
       return `<${tag} class="${cls}" data-k="${encodeURIComponent(key(it))}" style="top:calc(${top} * ${ppm} + 2px);height:calc(${h} * ${ppm} - 4px);background:var(--c${s})"><span class="nm">${disp}</span><span class="tm">${it.start}-${it.end}</span></${tag}>`;
     }).join('');
     cols += `<div class="col" style="background:var(--b${s});height:calc(${H} * ${ppm})"><div class="lines">${lines}</div>${blks}</div>`;
@@ -207,7 +213,23 @@ function render(){
     lh += `<button class="row ${want.has(key(it))?'want':''}" data-k="${encodeURIComponent(key(it))}" style="--sc:var(--c${it.stage})"><span><span class="st">${STAGES[it.stage].zh}</span><br><span class="tm">${it.start}-${it.end}</span></span><span class="nm">${it.name}</span><span class="star">★</span></button>`;
   }
   $('#list').innerHTML = lh;
+  fitNames();
 }
+/* 名稱塞不下格子就等比縮小（寬先、高次）；用 offsetWidth 量，不受手機縮放 transform 影響 */
+function fitNames(){
+  document.querySelectorAll('.blk').forEach(b => {
+    const nm = b.querySelector('.nm'), tm = b.querySelector('.tm');
+    nm.style.fontSize = '';
+    const base = parseFloat(getComputedStyle(nm).fontSize), availW = b.clientWidth - 10, availH = b.clientHeight - 8;
+    let f = base;
+    if (nm.offsetWidth > availW) f = base * availW / nm.offsetWidth;
+    nm.style.fontSize = f.toFixed(2) + 'px';
+    const th = tm ? tm.offsetHeight : 0;
+    if (nm.offsetHeight + th > availH && nm.offsetHeight > 0) nm.style.fontSize = (f * Math.max(availH - th, 8) / nm.offsetHeight).toFixed(2) + 'px';
+  });
+}
+addEventListener('resize', fitNames);
+if (document.fonts) document.fonts.ready.then(fitNames);
 function openBand(it){
   cur = it;
   const card = $('#card'); card.style.setProperty('--sc', `var(--c${it.stage})`);
