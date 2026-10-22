@@ -2,7 +2,14 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" id="vp" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>
+/* 手機：版面固定 800px 寬，讓瀏覽器原生縮成滿版，可自由雙指縮放 */
+if (Math.min(screen.width, screen.height) < 760) {
+  document.getElementById('vp').setAttribute('content', 'width=800, viewport-fit=cover');
+  document.documentElement.classList.add('fitm');
+}
+</script>
 <title>浪人祭 2026 Rundown</title>
 <meta name="theme-color" content="#1c1918">
 <meta name="description" content="2026 浪人祭兩天演出時間表，點樂團聽 YouTube 熱門五首，標記想聽">
@@ -20,9 +27,10 @@
   --bg:#1c1918; --bg2:#262120; --ink:#fff7ea; --muted:#cbbfae; --gold:#f2c14e; --line:rgba(255,255,255,.55); --dash:rgba(255,255,255,.28);
   --c0:#d8343a; --b0:#8c4842; --c1:#1ea5b5; --b1:#3e7e86; --c2:#e6a123; --b2:#8b7a3f;
   --c3:#b46ac9; --b3:#866692; --c4:#3dab6b; --b4:#4c8962; --c5:#e5752c; --b5:#8d6845; --c6:#3a55b8; --b6:#5a689c;
-  --ppm:1.8px; /* 每分鐘高度 */
+  --ppm:2px; /* 每分鐘高度 */
 }
 *{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 html,body{margin:0}
 body{overflow-x:hidden}
 body{background:var(--bg) radial-gradient(circle at 20% 0,#3a2a22 0,transparent 45%) fixed;color:var(--ink);font-family:"Noto Sans TC",system-ui,sans-serif;}
@@ -42,7 +50,35 @@ header{text-align:center;padding:10px 0 6px;position:relative}
 .legend{display:flex;justify-content:center;align-items:center;gap:14px;font-size:13px;color:var(--muted);margin:6px 0 12px;flex-wrap:wrap}
 .legend .chip{display:inline-flex;align-items:center;gap:6px}
 .legend i{width:14px;height:14px;border-radius:4px;background:var(--gold);box-shadow:0 0 8px 2px var(--gold)}
-@media (min-width:761px){.legend .pinch{display:none}}
+html:not(.fitm) .legend .pinch{display:none}
+/* 手機版面被整體縮小約一半，操作元件與彈窗放大補回 */
+.fitm{--ppm:2.4px}
+.fitm .logo{font-size:56px}
+.fitm .sub{font-size:24px}
+.fitm .tab{font-size:30px;padding:14px 30px;border-width:4px}
+.fitm .legend{font-size:24px;gap:22px}
+.fitm .legend i{width:24px;height:24px}
+.fitm .legend button,.fitm .views button{font-size:24px;padding:8px 22px}
+.fitm .views{margin-bottom:16px}
+.fitm .slot{font-size:28px}
+.fitm .row{grid-template-columns:150px 1fr auto;padding:18px 22px;border-left-width:14px;border-radius:16px}
+.fitm .row .st{font-size:24px}.fitm .row .tm{font-size:22px}.fitm .row .nm{font-size:30px}.fitm .row .star{font-size:34px}
+.fitm footer{font-size:22px}
+.fitm dialog{max-width:760px}
+.fitm .card-h{padding:26px 28px 18px}
+.fitm .card-h h2{font-size:42px;padding-right:70px}
+.fitm .card-h p{font-size:25px}
+.fitm .x{width:62px;height:62px;font-size:38px;top:16px;right:16px}
+.fitm .acts{padding:22px 28px 8px;gap:16px}
+.fitm .acts button{font-size:28px;padding:14px 28px;border-width:3px}
+.fitm .player{margin:18px 28px 0}
+.fitm ol.vids{padding:18px 28px 26px;gap:14px}
+.fitm .vid{grid-template-columns:44px 220px 1fr;gap:18px;padding:10px;border-radius:14px}
+.fitm .vid img{width:220px}
+.fitm .vid .rk{font-size:32px}
+.fitm .vid .tt{font-size:25px}
+.fitm .vid .vw{font-size:22px}
+.fitm .note{font-size:22px;padding:0 28px 24px}
 .legend button{font:inherit;font-size:13px;color:var(--muted);background:none;border:1px solid #6b5e52;border-radius:999px;padding:3px 10px;cursor:pointer}
 .legend button[aria-pressed=true]{color:#3a1c12;background:var(--gold);border-color:var(--gold)}
 .scroller{border-radius:14px}
@@ -66,6 +102,7 @@ button.blk:hover,button.blk:focus-visible{transform:scale(1.04);z-index:3;outlin
 .blk .nm{font-size:15px;word-break:break-word}
 .blk.small .nm{font-size:10px}
 .blk.long .nm{font-size:12.5px}
+.blk.xlong .nm{font-size:11px}
 .blk .ft{display:block;font-size:10px;font-weight:700;opacity:.95}
 .blk .tm{font-size:10.5px;font-weight:500;margin-top:2px;opacity:.95}
 .blk.off{cursor:default;opacity:.92}
@@ -179,7 +216,7 @@ function render(){
       const clickable = it.vids && it.vids.length;
       const tag = clickable ? 'button' : 'div';
       const disp = it.label || dispName(it.name);
-      const cls = ['blk', clickable?'':'off', it.small?'small':'', (!it.label && it.name.split(' ft. ')[0].length > 10)?'long':'', want.has(key(it))?'want':''].join(' ');
+      const cls = ['blk', clickable?'':'off', it.small?'small':'', (!it.label && it.name.split(' ft. ')[0].length > 14)?'xlong':(!it.label && it.name.split(' ft. ')[0].length > 10)?'long':'', want.has(key(it))?'want':''].join(' ');
       return `<${tag} class="${cls}" data-k="${encodeURIComponent(key(it))}" style="top:calc(${top} * ${ppm} + 2px);height:calc(${h} * ${ppm} - 4px);background:var(--c${s})"><span class="nm">${disp}</span><span class="tm">${it.start}-${it.end}</span></${tag}>`;
     }).join('');
     cols += `<div class="col" style="background:var(--b${s});height:calc(${H} * ${ppm})"><div class="lines">${lines}</div>${blks}</div>`;
@@ -232,18 +269,11 @@ document.querySelectorAll('.tab').forEach(b => b.onclick = () => { day = +b.data
 $('#onlyWant').onclick = () => { const on = $('#onlyWant').getAttribute('aria-pressed') !== 'true'; $('#onlyWant').setAttribute('aria-pressed', on); $('#main').classList.toggle('dim', on); };
 let view = 'grid';
 try { view = localStorage.getItem('vf26-view2') || view; } catch(e) {}
-const setView = v => { view = v; document.body.classList.toggle('mode-list', v === 'list'); requestAnimationFrame(fit);
+const setView = v => { view = v; document.body.classList.toggle('mode-list', v === 'list');
   document.querySelectorAll('.views button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === v)); try { localStorage.setItem('vf26-view2', v); } catch(e) {} };
 document.querySelectorAll('.views button').forEach(b => b.onclick = () => setView(b.dataset.v));
 setView(view);
-const DESIGN_W = 780;
-function fit(){
-  const b = $('#board'), cw = $('.scroller').clientWidth;
-  if (cw && cw < DESIGN_W) { b.style.width = DESIGN_W + 'px'; b.style.zoom = cw / DESIGN_W; }
-  else { b.style.width = ''; b.style.zoom = ''; }
-}
-addEventListener('resize', fit);
-render(); fit();
+render();
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {/* 本機 file:// 開啟會失敗，忽略 */});
 </script>
 </body>
