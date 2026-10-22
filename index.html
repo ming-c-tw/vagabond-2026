@@ -5,7 +5,7 @@
 <meta name="viewport" id="vp" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <script>
 /* 手機：版面固定 800px 寬，讓瀏覽器原生縮成滿版，可自由雙指縮放 */
-if (Math.min(screen.width, screen.height) < 760) {
+if (Math.min(screen.width, screen.height) < 760 && matchMedia('(pointer: coarse)').matches) {
   document.getElementById('vp').setAttribute('content', 'width=800, viewport-fit=cover');
   document.documentElement.classList.add('fitm');
 }
@@ -37,7 +37,12 @@ body{background:var(--bg) radial-gradient(circle at 20% 0,#3a2a22 0,transparent 
 body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.07;
   background:repeating-conic-gradient(from 0deg at 50% 0,#fff 0 3deg,transparent 3deg 12deg);}
 .wrap{max-width:1100px;margin:0 auto;padding:16px;padding-top:max(16px,env(safe-area-inset-top))}
-header{text-align:center;padding:10px 0 8px;position:sticky;top:0;z-index:20;background:linear-gradient(var(--bg) 88%,rgba(28,25,24,0))}
+/* 頁首底色＝整頁背景（光芒＋暖光），固定於視窗對齊，捲動時看起來是同一片背景；全寬、底部淡出 */
+header{text-align:center;padding:10px 0 28px;margin-bottom:-20px;position:sticky;top:0;z-index:20;
+  margin-inline:calc(50% - 50vw);padding-inline:calc(50vw - 50%);
+  background:repeating-conic-gradient(from 0deg at 50% 0,rgba(255,255,255,.07) 0 3deg,transparent 3deg 12deg),radial-gradient(circle at 20% 0,#3a2a22 0,transparent 45%),var(--bg);
+  background-attachment:fixed,fixed;
+  -webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 26px),transparent);mask-image:linear-gradient(to bottom,#000 calc(100% - 26px),transparent)}
 .views{margin-bottom:4px}
 .logo{font-family:Bungee,sans-serif;font-size:clamp(19px,6.4vw,48px);color:var(--gold);letter-spacing:1px;
   text-shadow:3px 3px 0 #b8322c,6px 6px 0 #1b6f78;line-height:1}
@@ -54,7 +59,7 @@ header{text-align:center;padding:10px 0 8px;position:sticky;top:0;z-index:20;bac
 html:not(.fitm) .legend .pinch{display:none}
 /* 手機版面被整體縮小約一半，操作元件與彈窗放大補回 */
 .fitm{--ppm:2.4px}
-.fitm header{position:fixed;left:0;top:0;width:100%;transform-origin:0 0;padding:14px 16px 10px;padding-top:max(14px,env(safe-area-inset-top))}
+.fitm header{position:fixed;left:0;top:0;width:100%;transform-origin:0 0;margin:0;padding:14px 16px 30px;padding-top:max(14px,env(safe-area-inset-top));background-attachment:scroll,scroll}
 .fitm .logo{font-size:50px}
 .fitm .sub{font-size:24px}
 .fitm .tab{font-size:30px;padding:14px 30px;border-width:4px}
@@ -258,7 +263,7 @@ function placeHead(){
   const h = document.querySelector('header'), vv = window.visualViewport;
   const k = vv ? vv.width / document.documentElement.clientWidth : 1;
   h.style.transform = vv ? `translate(${vv.offsetLeft}px, ${vv.offsetTop}px) scale(${k})` : '';
-  document.querySelector('.wrap').style.paddingTop = (h.offsetHeight + 10) + 'px';
+  document.querySelector('.wrap').style.paddingTop = (h.offsetHeight - 14) + 'px';
 }
 if (window.visualViewport) { ['resize', 'scroll'].forEach(ev => { visualViewport.addEventListener(ev, placeDlg); visualViewport.addEventListener(ev, placeHead); }); }
 addEventListener('scroll', placeHead, {passive: true});
