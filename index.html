@@ -37,7 +37,8 @@ body{background:var(--bg) radial-gradient(circle at 20% 0,#3a2a22 0,transparent 
 body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.07;
   background:repeating-conic-gradient(from 0deg at 50% 0,#fff 0 3deg,transparent 3deg 12deg);}
 .wrap{max-width:1100px;margin:0 auto;padding:16px;padding-top:max(16px,env(safe-area-inset-top))}
-header{text-align:center;padding:10px 0 6px;position:relative}
+header{text-align:center;padding:10px 0 8px;position:sticky;top:0;z-index:20;background:linear-gradient(var(--bg) 88%,rgba(28,25,24,0))}
+.views{margin-bottom:4px}
 .logo{font-family:Bungee,sans-serif;font-size:clamp(19px,6.4vw,48px);color:var(--gold);letter-spacing:1px;
   text-shadow:3px 3px 0 #b8322c,6px 6px 0 #1b6f78;line-height:1}
 .logo small{display:block;font-size:.55em;margin-top:4px}
@@ -53,13 +54,14 @@ header{text-align:center;padding:10px 0 6px;position:relative}
 html:not(.fitm) .legend .pinch{display:none}
 /* 手機版面被整體縮小約一半，操作元件與彈窗放大補回 */
 .fitm{--ppm:2.4px}
-.fitm .logo{font-size:56px}
+.fitm header{position:fixed;left:0;top:0;width:100%;transform-origin:0 0;padding:14px 16px 10px;padding-top:max(14px,env(safe-area-inset-top))}
+.fitm .logo{font-size:50px}
 .fitm .sub{font-size:24px}
 .fitm .tab{font-size:30px;padding:14px 30px;border-width:4px}
 .fitm .legend{font-size:24px;gap:22px}
 .fitm .legend i{width:24px;height:24px}
 .fitm .legend button,.fitm .views button{font-size:24px;padding:8px 22px}
-.fitm .views{margin-bottom:16px}
+.fitm .views{margin-bottom:6px}
 .fitm .slot{font-size:28px}
 .fitm .row{grid-template-columns:150px 1fr auto;padding:18px 22px;border-left-width:14px;border-radius:16px}
 .fitm .row .st{font-size:24px}.fitm .row .tm{font-size:22px}.fitm .row .nm{font-size:30px}.fitm .row .star{font-size:34px}
@@ -169,8 +171,8 @@ ol.vids{list-style:none;margin:0;padding:10px 16px 16px;display:grid;gap:8px}
       <span id="cnt">已選 0 團</span>
       <button id="onlyWant" aria-pressed="false">只看想聽</button>
     </div>
+    <div class="views"><button data-v="grid" aria-pressed="true">時間表</button><button data-v="list" aria-pressed="false">列表</button></div>
   </header>
-  <div class="views"><button data-v="grid" aria-pressed="true">時間表</button><button data-v="list" aria-pressed="false">列表</button></div>
   <div id="main"><div class="scroller"><div class="board" id="board"></div></div><div class="list" id="list"></div></div>
   <footer>「想聽」記在這台裝置的瀏覽器裡。<br>手機加到主畫面：<br>iPhone：用 Safari 開，分享 →「加入主畫面」<br>Android：用 Chrome 開，選單 →「安裝應用程式」</footer>
 </div>
@@ -253,7 +255,15 @@ function placeDlg(){
   const w = d.offsetWidth, h = d.offsetHeight;
   d.style.transform = `translate(${vv.offsetLeft + (vv.width - w*k)/2}px, ${vv.offsetTop + (vv.height - h*k)/2}px) scale(${k})`;
 }
-if (window.visualViewport) { visualViewport.addEventListener('resize', placeDlg); visualViewport.addEventListener('scroll', placeDlg); }
+function placeHead(){
+  if (!document.documentElement.classList.contains('fitm')) return;
+  const h = document.querySelector('header'), vv = window.visualViewport;
+  const k = vv ? vv.width / document.documentElement.clientWidth : 1;
+  h.style.transform = vv ? `translate(${vv.offsetLeft}px, ${vv.offsetTop}px) scale(${k})` : '';
+  document.querySelector('.wrap').style.paddingTop = (h.offsetHeight + 10) + 'px';
+}
+if (window.visualViewport) { ['resize', 'scroll'].forEach(ev => { visualViewport.addEventListener(ev, placeDlg); visualViewport.addEventListener(ev, placeHead); }); }
+addEventListener('scroll', placeHead, {passive: true});
 if (window.ResizeObserver) new ResizeObserver(placeDlg).observe($('#dlg'));
 function syncWant(){
   const on = want.has(key(cur));
@@ -284,7 +294,7 @@ const setView = v => { view = v; document.body.classList.toggle('mode-list', v =
   document.querySelectorAll('.views button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === v)); try { localStorage.setItem('vf26-view2', v); } catch(e) {} };
 document.querySelectorAll('.views button').forEach(b => b.onclick = () => setView(b.dataset.v));
 setView(view);
-render();
+render(); placeHead();
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {/* 本機 file:// 開啟會失敗，忽略 */});
 </script>
 </body>
