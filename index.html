@@ -168,7 +168,6 @@ ol.vids{list-style:none;margin:0;padding:10px 16px 16px;display:grid;gap:8px}
     </div>
     <div class="legend">
       <span class="chip"><i></i>發亮＝想聽</span><span class="chip pinch">雙指可放大</span>
-      <span id="cnt">已選 0 團</span>
       <button id="onlyWant" aria-pressed="false">只看想聽</button>
     </div>
     <div class="views"><button data-v="grid" aria-pressed="true">時間表</button><button data-v="list" aria-pressed="false">列表</button></div>
@@ -230,7 +229,6 @@ function render(){
     lh += `<button class="row ${want.has(key(it))?'want':''}" data-k="${encodeURIComponent(key(it))}" style="--sc:var(--c${it.stage})"><span><span class="st">${STAGES[it.stage].zh}</span><br><span class="tm">${it.start}-${it.end}</span></span><span class="nm">${it.name}</span><span class="star">★</span></button>`;
   }
   $('#list').innerHTML = lh;
-  $('#cnt').textContent = `已選 ${[...want].filter(k=>k.startsWith(day+'|')).length} 團（兩天共 ${want.size} 團）`;
 }
 function openBand(it){
   cur = it;
