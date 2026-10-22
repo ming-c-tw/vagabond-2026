@@ -64,7 +64,7 @@ html:not(.fitm) .legend .pinch{display:none}
 .fitm .row{grid-template-columns:150px 1fr auto;padding:18px 22px;border-left-width:14px;border-radius:16px}
 .fitm .row .st{font-size:24px}.fitm .row .tm{font-size:22px}.fitm .row .nm{font-size:30px}.fitm .row .star{font-size:34px}
 .fitm footer{font-size:22px}
-.fitm dialog{max-width:760px}
+.fitm dialog{position:fixed;margin:0;inset:0 auto auto 0;transform-origin:0 0;width:760px;max-width:none;max-height:none}
 .fitm .card-h{padding:26px 28px 18px}
 .fitm .card-h h2{font-size:42px;padding-right:70px}
 .fitm .card-h p{font-size:25px}
@@ -160,7 +160,6 @@ ol.vids{list-style:none;margin:0;padding:10px 16px 16px;display:grid;gap:8px}
 <div class="wrap">
   <header>
     <div class="logo">VAGABOND FESTIVAL<small>浪人祭 2026</small></div>
-    <div class="sub">臺南安平臺旁大草皮・點樂團看 YouTube 觀看數前五名，可標記「想聽」</div>
     <div class="tabs" role="tablist">
       <button class="tab" role="tab" data-day="1"><b>DAY 1</b>11.07 六</button>
       <button class="tab" role="tab" data-day="2"><b>DAY 2</b>11.08 日</button>
@@ -243,7 +242,19 @@ function openBand(it){
     <div><div class="tt">${v.t.replace(/</g,'&lt;')}</div><div class="vw">${fmt(v.v)} 次觀看<a href="https://youtu.be/${v.id}" target="_blank" rel="noopener">YouTube ↗</a></div></div></li>`).join('');
   $('#dNote').textContent = it.vids.length < 5 ? `YouTube 上只找到 ${it.vids.length} 首可列入的歌。` : '點一列直接在這裡播放。';
   $('#dlg').showModal();
+  placeDlg();
 }
+/* 手機雙指放大時，彈窗反向縮放並置中在目前可見範圍，維持原本大小 */
+function placeDlg(){
+  const d = $('#dlg'), vv = window.visualViewport;
+  if (!d.open || !vv || !document.documentElement.classList.contains('fitm')) return;
+  const k = vv.width / document.documentElement.clientWidth;
+  $('#card').style.maxHeight = (vv.height / k - 24) + 'px';
+  const w = d.offsetWidth, h = d.offsetHeight;
+  d.style.transform = `translate(${vv.offsetLeft + (vv.width - w*k)/2}px, ${vv.offsetTop + (vv.height - h*k)/2}px) scale(${k})`;
+}
+if (window.visualViewport) { visualViewport.addEventListener('resize', placeDlg); visualViewport.addEventListener('scroll', placeDlg); }
+if (window.ResizeObserver) new ResizeObserver(placeDlg).observe($('#dlg'));
 function syncWant(){
   const on = want.has(key(cur));
   $('#dWant').setAttribute('aria-pressed', on); $('#dWant').textContent = on ? '★ 想聽（已加入）' : '☆ 想聽';
