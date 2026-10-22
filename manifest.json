@@ -1,0 +1,25 @@
+{
+  "name": "浪人祭 2026 Rundown",
+  "short_name": "浪人祭2026",
+  "description": "2026 浪人祭兩天演出時間表，點樂團聽 YouTube 熱門五首，標記想聽",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#1c1918",
+  "theme_color": "#1c1918",
+  "lang": "zh-Hant",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
