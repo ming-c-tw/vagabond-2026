@@ -1,5 +1,5 @@
 /* 浪人祭 Rundown Service Worker：網路優先，確保開啟時拿到最新版；離線時退回快取 */
-const CACHE = 'vf26-v8';
+const CACHE = 'vf26-v9';
 const ASSETS = [
   './',
   './index.html',
