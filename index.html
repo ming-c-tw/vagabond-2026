@@ -23,7 +23,8 @@
   --ppm:1.8px; /* 每分鐘高度 */
 }
 *{box-sizing:border-box}
-html,body{margin:0;overflow-x:hidden}
+html,body{margin:0}
+body{overflow-x:hidden}
 body{background:var(--bg) radial-gradient(circle at 20% 0,#3a2a22 0,transparent 45%) fixed;color:var(--ink);font-family:"Noto Sans TC",system-ui,sans-serif;}
 body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.07;
   background:repeating-conic-gradient(from 0deg at 50% 0,#fff 0 3deg,transparent 3deg 12deg);}
@@ -41,13 +42,14 @@ header{text-align:center;padding:10px 0 6px;position:relative}
 .legend{display:flex;justify-content:center;align-items:center;gap:14px;font-size:13px;color:var(--muted);margin:6px 0 12px;flex-wrap:wrap}
 .legend .chip{display:inline-flex;align-items:center;gap:6px}
 .legend i{width:14px;height:14px;border-radius:4px;background:var(--gold);box-shadow:0 0 8px 2px var(--gold)}
+@media (min-width:761px){.legend .pinch{display:none}}
 .legend button{font:inherit;font-size:13px;color:var(--muted);background:none;border:1px solid #6b5e52;border-radius:999px;padding:3px 10px;cursor:pointer}
 .legend button[aria-pressed=true]{color:#3a1c12;background:var(--gold);border-color:var(--gold)}
-.scroller{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:14px}
-.board{min-width:820px;background:#161312;border:3px solid #6b4a2f;border-radius:14px;padding:10px 6px 14px}
+.scroller{border-radius:14px}
+.board{background:#161312;border:3px solid #6b4a2f;border-radius:14px;padding:10px 6px 14px}
 .heads,.grid{display:grid;grid-template-columns:44px repeat(7,1fr) 44px;gap:0}
 .heads > div{text-align:center;padding:4px 2px 10px}
-.heads .zh{font-weight:900;font-size:clamp(18px,2.3vw,28px);line-height:1.1;-webkit-text-stroke:1px rgba(0,0,0,.35)}
+.heads .zh{font-weight:900;font-size:26px;line-height:1.1;-webkit-text-stroke:1px rgba(0,0,0,.35)}
 .heads .en{font-family:Bungee,sans-serif;font-size:11px;line-height:1.15;opacity:.95;margin-top:3px}
 .grid{position:relative}
 .tcol{position:relative}
@@ -61,10 +63,10 @@ header{text-align:center;padding:10px 0 6px;position:relative}
   font-weight:900;line-height:1.15;overflow:hidden;transition:transform .12s, box-shadow .2s}
 button.blk{font:inherit;font-weight:900;cursor:pointer}
 button.blk:hover,button.blk:focus-visible{transform:scale(1.04);z-index:3;outline:none}
-.blk .nm{font-size:clamp(11px,1.45vw,17px);word-break:break-word}
-.blk.small .nm{font-size:clamp(9px,1vw,11px)}
-.blk.long .nm{font-size:clamp(10px,1.15vw,13.5px)}
-.blk .ft{display:block;font-size:clamp(9px,.95vw,11px);font-weight:700;opacity:.95}
+.blk .nm{font-size:15px;word-break:break-word}
+.blk.small .nm{font-size:10px}
+.blk.long .nm{font-size:12.5px}
+.blk .ft{display:block;font-size:10px;font-weight:700;opacity:.95}
 .blk .tm{font-size:10.5px;font-weight:500;margin-top:2px;opacity:.95}
 .blk.off{cursor:default;opacity:.92}
 .blk.want{border-color:#fff6c9;box-shadow:0 0 0 2px var(--gold),0 0 18px 6px rgba(242,193,78,.85);animation:glow 1.6s ease-in-out infinite;z-index:2}
@@ -88,12 +90,6 @@ button.blk:hover,button.blk:focus-visible{transform:scale(1.04);z-index:3;outlin
 .dim .row:not(.want){opacity:.3}
 @media (max-width:760px){
   .wrap{padding:12px}
-  .board{min-width:690px;padding:8px 0 12px}
-  .heads,.grid{grid-template-columns:40px repeat(7,1fr) 0}
-  .heads > div:first-child,.tcol:first-child{position:sticky;left:0;z-index:5;background:#161312}
-  .tcol:last-child{visibility:hidden}
-  .heads .en{font-size:9px}
-  .tcol span{font-size:11px}
 }
 footer{text-align:center;color:var(--muted);font-size:12px;margin:14px 0 30px}
 /* 彈窗 */
@@ -133,7 +129,7 @@ ol.vids{list-style:none;margin:0;padding:10px 16px 16px;display:grid;gap:8px}
       <button class="tab" role="tab" data-day="2"><b>DAY 2</b>11.08 日</button>
     </div>
     <div class="legend">
-      <span class="chip"><i></i>發亮＝想聽</span>
+      <span class="chip"><i></i>發亮＝想聽</span><span class="chip pinch">雙指可放大</span>
       <span id="cnt">已選 0 團</span>
       <button id="onlyWant" aria-pressed="false">只看想聽</button>
     </div>
@@ -234,13 +230,20 @@ $('#dlg').addEventListener('click', e => { if (e.target === $('#dlg')) close(); 
 $('#dlg').addEventListener('close', () => { $('#player').innerHTML = ''; });
 document.querySelectorAll('.tab').forEach(b => b.onclick = () => { day = +b.dataset.day; try { localStorage.setItem('vf26-day', day); } catch(e) {} render(); });
 $('#onlyWant').onclick = () => { const on = $('#onlyWant').getAttribute('aria-pressed') !== 'true'; $('#onlyWant').setAttribute('aria-pressed', on); $('#main').classList.toggle('dim', on); };
-let view = matchMedia('(max-width:760px)').matches ? 'list' : 'grid';
-try { view = localStorage.getItem('vf26-view') || view; } catch(e) {}
-const setView = v => { view = v; document.body.classList.toggle('mode-list', v === 'list');
-  document.querySelectorAll('.views button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === v)); try { localStorage.setItem('vf26-view', v); } catch(e) {} };
+let view = 'grid';
+try { view = localStorage.getItem('vf26-view2') || view; } catch(e) {}
+const setView = v => { view = v; document.body.classList.toggle('mode-list', v === 'list'); requestAnimationFrame(fit);
+  document.querySelectorAll('.views button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === v)); try { localStorage.setItem('vf26-view2', v); } catch(e) {} };
 document.querySelectorAll('.views button').forEach(b => b.onclick = () => setView(b.dataset.v));
 setView(view);
-render();
+const DESIGN_W = 780;
+function fit(){
+  const b = $('#board'), cw = $('.scroller').clientWidth;
+  if (cw && cw < DESIGN_W) { b.style.width = DESIGN_W + 'px'; b.style.zoom = cw / DESIGN_W; }
+  else { b.style.width = ''; b.style.zoom = ''; }
+}
+addEventListener('resize', fit);
+render(); fit();
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {/* 本機 file:// 開啟會失敗，忽略 */});
 </script>
 </body>
