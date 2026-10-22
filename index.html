@@ -48,9 +48,9 @@ header{text-align:center;padding:max(10px,env(safe-area-inset-top)) 16px 24px;po
 .hdrbtn::before{content:'';width:8px;height:8px;border-left:2px solid;border-top:2px solid;transform:translateY(2px) rotate(45deg)}
 .hdr-hide header{padding:0;background:none;-webkit-mask-image:none;mask-image:none}
 .hdr-hide header>:not(.hdrbtn){display:none}
-.hdr-hide .hdrbtn{position:fixed;top:auto;right:12px;bottom:calc(14px + env(safe-area-inset-bottom))}
+.hdr-hide .hdrbtn{position:fixed;top:max(8px,env(safe-area-inset-top));right:12px;bottom:auto}
 .hdr-hide .hdrbtn::before{transform:translateY(-2px) rotate(225deg)}
-.hdr-hide #main{top:0;padding-top:max(10px,env(safe-area-inset-top))}
+.hdr-hide #main{top:0;padding-top:calc(46px + env(safe-area-inset-top))}
 .logo{font-family:Bungee,sans-serif;font-size:clamp(19px,6.4vw,48px);color:var(--gold);letter-spacing:1px;
   text-shadow:3px 3px 0 #b8322c,6px 6px 0 #1b6f78;line-height:1}
 .logo small{display:block;font-size:.55em;margin-top:4px}
