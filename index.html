@@ -2,13 +2,10 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" id="vp" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script>
-/* 手機：版面固定 800px 寬，讓瀏覽器原生縮成滿版，可自由雙指縮放 */
-if (Math.min(screen.width, screen.height) < 760 && matchMedia('(pointer: coarse)').matches) {
-  document.getElementById('vp').setAttribute('content', 'width=800, viewport-fit=cover');
-  document.documentElement.classList.add('fitm');
-}
+/* 觸控裝置：整頁不縮放，只有時間表可以雙指縮放；頁首與背景固定 */
+if (matchMedia('(pointer: coarse)').matches) document.documentElement.classList.add('tz');
 </script>
 <title>浪人祭 2026 Rundown</title>
 <meta name="theme-color" content="#1c1918">
@@ -37,12 +34,13 @@ body{background:var(--bg) radial-gradient(circle at 20% 0,#3a2a22 0,transparent 
 body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.07;
   background:repeating-conic-gradient(from 0deg at 50% 0,#fff 0 3deg,transparent 3deg 12deg);}
 .wrap{max-width:1100px;margin:0 auto;padding:16px;padding-top:max(16px,env(safe-area-inset-top))}
-/* 頁首底色＝整頁背景（光芒＋暖光），固定於視窗對齊，捲動時看起來是同一片背景；全寬、底部淡出 */
-header{text-align:center;padding:10px 0 28px;margin-bottom:-20px;position:sticky;top:0;z-index:20;
+/* 頁首：釘選在上；底色帶光芒，捲上去的內容在頁首下方變暗、變模糊，底部柔和淡出 */
+header{text-align:center;padding:10px 0 24px;margin-bottom:-16px;position:sticky;top:0;z-index:20;
   margin-inline:calc(50% - 50vw);padding-inline:calc(50vw - 50%);
-  background:repeating-conic-gradient(from 0deg at 50% 0,rgba(255,255,255,.07) 0 3deg,transparent 3deg 12deg),radial-gradient(circle at 20% 0,#3a2a22 0,transparent 45%),var(--bg);
+  background:repeating-conic-gradient(from 0deg at 50% 0,rgba(255,255,255,.07) 0 3deg,transparent 3deg 12deg),radial-gradient(circle at 20% 0,rgba(58,42,34,.9) 0,transparent 45%),rgba(28,25,24,.74);
   background-attachment:fixed,fixed;
-  -webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 26px),transparent);mask-image:linear-gradient(to bottom,#000 calc(100% - 26px),transparent)}
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  -webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 20px),transparent);mask-image:linear-gradient(to bottom,#000 calc(100% - 20px),transparent)}
 .views{margin-bottom:4px}
 .logo{font-family:Bungee,sans-serif;font-size:clamp(19px,6.4vw,48px);color:var(--gold);letter-spacing:1px;
   text-shadow:3px 3px 0 #b8322c,6px 6px 0 #1b6f78;line-height:1}
@@ -56,36 +54,16 @@ header{text-align:center;padding:10px 0 28px;margin-bottom:-20px;position:sticky
 .legend{display:flex;justify-content:center;align-items:center;gap:14px;font-size:13px;color:var(--muted);margin:6px 0 12px;flex-wrap:wrap}
 .legend .chip{display:inline-flex;align-items:center;gap:6px}
 .legend i{width:14px;height:14px;border-radius:4px;background:var(--gold);box-shadow:0 0 8px 2px var(--gold)}
-html:not(.fitm) .legend .pinch{display:none}
-/* 手機版面被整體縮小約一半，操作元件與彈窗放大補回 */
-.fitm{--ppm:2.4px}
-.fitm header{position:fixed;left:0;top:0;width:100%;transform-origin:0 0;margin:0;padding:14px 16px 30px;padding-top:max(14px,env(safe-area-inset-top));background-attachment:scroll,scroll}
-.fitm .logo{font-size:50px}
-.fitm .sub{font-size:24px}
-.fitm .tab{font-size:30px;padding:14px 30px;border-width:4px}
-.fitm .legend{font-size:24px;gap:22px}
-.fitm .legend i{width:24px;height:24px}
-.fitm .legend button,.fitm .views button{font-size:24px;padding:8px 22px}
-.fitm .views{margin-bottom:6px}
-.fitm .slot{font-size:28px}
-.fitm .row{grid-template-columns:150px 1fr auto;padding:18px 22px;border-left-width:14px;border-radius:16px}
-.fitm .row .st{font-size:24px}.fitm .row .tm{font-size:22px}.fitm .row .nm{font-size:30px}.fitm .row .star{font-size:34px}
-.fitm footer{font-size:22px}
-.fitm dialog{position:fixed;margin:0;inset:0 auto auto 0;transform-origin:0 0;width:760px;max-width:none;max-height:none}
-.fitm .card-h{padding:26px 28px 18px}
-.fitm .card-h h2{font-size:42px;padding-right:70px}
-.fitm .card-h p{font-size:25px}
-.fitm .x{width:62px;height:62px;font-size:38px;top:16px;right:16px}
-.fitm .acts{padding:22px 28px 8px;gap:16px}
-.fitm .acts button{font-size:28px;padding:14px 28px;border-width:3px}
-.fitm .player{margin:18px 28px 0}
-.fitm ol.vids{padding:18px 28px 26px;gap:14px}
-.fitm .vid{grid-template-columns:44px 220px 1fr;gap:18px;padding:10px;border-radius:14px}
-.fitm .vid img{width:220px}
-.fitm .vid .rk{font-size:32px}
-.fitm .vid .tt{font-size:25px}
-.fitm .vid .vw{font-size:22px}
-.fitm .note{font-size:22px;padding:0 28px 24px}
+html:not(.tz) .legend .pinch{display:none}
+/* 觸控：頁面不捲，#main 自己捲；時間表等比縮放 */
+.tz{--ppm:2.4px}
+.tz,.tz body{height:100%;overflow:hidden;touch-action:pan-x pan-y;overscroll-behavior:none}
+.tz .wrap{padding:0}
+.tz header{position:fixed;left:0;right:0;top:0;margin:0;padding:max(10px,env(safe-area-inset-top)) 12px 22px;background-attachment:scroll,scroll}
+.tz #main{position:fixed;inset:0;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-x pan-y;
+  padding:calc(var(--hh,180px) - 10px) 12px calc(28px + env(safe-area-inset-bottom))}
+.tz .sizer{position:relative;margin:0 auto}
+.tz .board{position:absolute;left:0;top:0;width:780px;transform-origin:0 0}
 .legend button{font:inherit;font-size:13px;color:var(--muted);background:none;border:1px solid #6b5e52;border-radius:999px;padding:3px 10px;cursor:pointer}
 .legend button[aria-pressed=true]{color:#3a1c12;background:var(--gold);border-color:var(--gold)}
 .scroller{border-radius:14px}
@@ -121,7 +99,8 @@ button.blk:hover,button.blk:focus-visible{transform:scale(1.04);z-index:3;outlin
 .views button{font:inherit;font-size:13px;font-weight:700;cursor:pointer;color:var(--muted);background:none;border:1px solid #6b5e52;border-radius:8px;padding:5px 14px}
 .views button[aria-pressed=true]{color:var(--ink);border-color:var(--ink)}
 .list{display:none;gap:8px}
-.mode-list .scroller{display:none}.mode-list .list{display:grid}
+.mode-list .scroller{display:none}
+.wrap{padding-bottom:28px}.mode-list .list{display:grid}
 .slot{color:var(--gold);font-family:Bungee,sans-serif;font-size:15px;margin:10px 2px 0}
 .row{display:grid;grid-template-columns:76px 1fr auto;align-items:center;gap:10px;width:100%;text-align:left;font:inherit;color:var(--ink);
   background:var(--bg2);border:2px solid transparent;border-left:8px solid var(--sc);border-radius:10px;padding:10px 12px;cursor:pointer}
@@ -135,7 +114,6 @@ button.blk:hover,button.blk:focus-visible{transform:scale(1.04);z-index:3;outlin
 @media (max-width:760px){
   .wrap{padding:12px}
 }
-footer{text-align:center;color:var(--muted);font-size:12px;margin:14px 0 30px}
 /* 彈窗 */
 dialog{border:none;padding:0;background:transparent;max-width:min(640px,calc(100vw - 20px));width:100%;max-height:calc(100dvh - 20px)}
 .card{max-height:calc(100dvh - 20px);overflow:auto}
@@ -177,8 +155,7 @@ ol.vids{list-style:none;margin:0;padding:10px 16px 16px;display:grid;gap:8px}
     </div>
     <div class="views"><button data-v="grid" aria-pressed="true">時間表</button><button data-v="list" aria-pressed="false">列表</button></div>
   </header>
-  <div id="main"><div class="scroller"><div class="board" id="board"></div></div><div class="list" id="list"></div></div>
-  <footer>手機加到主畫面：<br>iPhone：用 Safari 開，分享 →「加入主畫面」<br>Android：用 Chrome 開，選單 →「安裝應用程式」</footer>
+  <div id="main"><div class="scroller"><div class="sizer" id="sizer"><div class="board" id="board"></div></div></div><div class="list" id="list"></div></div>
 </div>
 <dialog id="dlg"><div class="card" id="card">
   <div class="card-h"><h2 id="dName"></h2><p id="dInfo"></p><button class="x" id="dClose" aria-label="關閉">×</button></div>
@@ -247,27 +224,48 @@ function openBand(it){
     <div><div class="tt">${v.t.replace(/</g,'&lt;')}</div><div class="vw">${fmt(v.v)} 次觀看<a href="https://youtu.be/${v.id}" target="_blank" rel="noopener">YouTube ↗</a></div></div></li>`).join('');
   $('#dNote').textContent = it.vids.length < 5 ? `YouTube 上只找到 ${it.vids.length} 首可列入的歌。` : '點一列直接在這裡播放。';
   $('#dlg').showModal();
-  placeDlg();
 }
-/* 手機雙指放大時，彈窗反向縮放並置中在目前可見範圍，維持原本大小 */
-function placeDlg(){
-  const d = $('#dlg'), vv = window.visualViewport;
-  if (!d.open || !vv || !document.documentElement.classList.contains('fitm')) return;
-  const k = vv.width / document.documentElement.clientWidth;
-  $('#card').style.maxHeight = (vv.height / k - 24) + 'px';
-  const w = d.offsetWidth, h = d.offsetHeight;
-  d.style.transform = `translate(${vv.offsetLeft + (vv.width - w*k)/2}px, ${vv.offsetTop + (vv.height - h*k)/2}px) scale(${k})`;
+/* 觸控：只有時間表可縮放（S＝縮放倍率，最小＝塞滿寬度） */
+const TZ = document.documentElement.classList.contains('tz'), DW = 780;
+let S = 0, SMIN = 1, P = null;
+function applyZoom(){
+  if (!TZ) return;
+  $('#board').style.transform = `scale(${S})`;
+  $('#sizer').style.width = DW * S + 'px';
+  $('#sizer').style.height = $('#board').offsetHeight * S + 'px';
 }
-function placeHead(){
-  if (!document.documentElement.classList.contains('fitm')) return;
-  const h = document.querySelector('header'), vv = window.visualViewport;
-  const k = vv ? vv.width / document.documentElement.clientWidth : 1;
-  h.style.transform = vv ? `translate(${vv.offsetLeft}px, ${vv.offsetTop}px) scale(${k})` : '';
-  document.querySelector('.wrap').style.paddingTop = (h.offsetHeight - 14) + 'px';
+function fitZoom(){
+  if (!TZ) return;
+  const atFit = !S || Math.abs(S - SMIN) < 1e-3;
+  SMIN = ($('#main').clientWidth - 24) / DW;
+  if (atFit || S < SMIN) S = SMIN;
+  applyZoom();
 }
-if (window.visualViewport) { ['resize', 'scroll'].forEach(ev => { visualViewport.addEventListener(ev, placeDlg); visualViewport.addEventListener(ev, placeHead); }); }
-addEventListener('scroll', placeHead, {passive: true});
-if (window.ResizeObserver) new ResizeObserver(placeDlg).observe($('#dlg'));
+function setHH(){ if (TZ) document.documentElement.style.setProperty('--hh', $('header').offsetHeight + 'px'); }
+if (TZ) {
+  const sc = $('#main'), dist = (a, b) => Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+  sc.addEventListener('touchstart', e => {
+    if (e.touches.length !== 2 || view !== 'grid') return;
+    const a = e.touches[0], b = e.touches[1], r = $('#sizer').getBoundingClientRect();
+    const cx = (a.clientX + b.clientX) / 2, cy = (a.clientY + b.clientY) / 2;
+    P = { d0: dist(a, b), s0: S, px: (cx - r.left) / S, py: (cy - r.top) / S };
+  }, { passive: true });
+  sc.addEventListener('touchmove', e => {
+    if (!P || e.touches.length !== 2) return;
+    if (e.cancelable) e.preventDefault();
+    const a = e.touches[0], b = e.touches[1], cx = (a.clientX + b.clientX) / 2, cy = (a.clientY + b.clientY) / 2;
+    S = Math.min(Math.max(P.s0 * dist(a, b) / P.d0, SMIN), SMIN * 4);
+    applyZoom();
+    const z = $('#sizer'), r = sc.getBoundingClientRect();
+    sc.scrollLeft = z.offsetLeft + P.px * S - (cx - r.left);
+    sc.scrollTop = z.offsetTop + P.py * S - (cy - r.top);
+  }, { passive: false });
+  sc.addEventListener('touchend', e => { if (e.touches.length < 2) P = null; });
+  ['gesturestart', 'gesturechange'].forEach(ev => document.addEventListener(ev, e => e.preventDefault()));
+  addEventListener('resize', () => { setHH(); fitZoom(); });
+  if (window.ResizeObserver) new ResizeObserver(setHH).observe($('header'));
+  if (document.fonts) document.fonts.ready.then(() => { setHH(); applyZoom(); });
+}
 function syncWant(){
   const on = want.has(key(cur));
   $('#dWant').setAttribute('aria-pressed', on); $('#dWant').textContent = on ? '★ 想聽（已加入）' : '☆ 想聽';
@@ -283,13 +281,13 @@ $('#dVids').addEventListener('click', e => {
   $('#player').className = 'player on';
   $('#player').innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${li.dataset.id}?autoplay=1" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>`;
 });
-$('#dWant').onclick = () => { const k = key(cur); want.has(k) ? want.delete(k) : want.add(k); save(); syncWant(); render(); };
+$('#dWant').onclick = () => { const k = key(cur); want.has(k) ? want.delete(k) : want.add(k); save(); syncWant(); render(); applyZoom(); };
 $('#dCopy').onclick = async () => { try { await navigator.clipboard.writeText(cur.name); $('#dCopy').textContent = '已複製 ✓'; } catch(e) { $('#dCopy').textContent = '複製失敗'; } setTimeout(()=>$('#dCopy').textContent='複製團名',1200); };
 const close = () => { $('#player').innerHTML = ''; $('#dlg').close(); };
 $('#dClose').onclick = close;
 $('#dlg').addEventListener('click', e => { if (e.target === $('#dlg')) close(); });
 $('#dlg').addEventListener('close', () => { $('#player').innerHTML = ''; });
-document.querySelectorAll('.tab').forEach(b => b.onclick = () => { day = +b.dataset.day; try { localStorage.setItem('vf26-day', day); } catch(e) {} render(); });
+document.querySelectorAll('.tab').forEach(b => b.onclick = () => { day = +b.dataset.day; try { localStorage.setItem('vf26-day', day); } catch(e) {} render(); applyZoom(); });
 $('#onlyWant').onclick = () => { const on = $('#onlyWant').getAttribute('aria-pressed') !== 'true'; $('#onlyWant').setAttribute('aria-pressed', on); $('#main').classList.toggle('dim', on); };
 let view = 'grid';
 try { view = localStorage.getItem('vf26-view2') || view; } catch(e) {}
@@ -297,7 +295,7 @@ const setView = v => { view = v; document.body.classList.toggle('mode-list', v =
   document.querySelectorAll('.views button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === v)); try { localStorage.setItem('vf26-view2', v); } catch(e) {} };
 document.querySelectorAll('.views button').forEach(b => b.onclick = () => setView(b.dataset.v));
 setView(view);
-render(); placeHead();
+render(); setHH(); fitZoom();
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {/* 本機 file:// 開啟會失敗，忽略 */});
 </script>
 </body>
