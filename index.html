@@ -83,7 +83,7 @@ html:not(.tz) .legend .pinch{display:none}
   font-weight:900;line-height:1.15;overflow:hidden;transition:transform .12s, box-shadow .2s}
 button.blk{font:inherit;font-weight:900;cursor:pointer}
 button.blk:hover,button.blk:focus-visible{transform:scale(1.04);z-index:3;outline:none}
-.blk .nm{font-size:15px;white-space:nowrap;line-height:1.15}
+.blk .nm{font-size:15px;white-space:nowrap;line-height:1.15;display:block;transform-origin:50% 0}
 .blk.small .nm{font-size:10px}
 .blk .tm{font-size:10.5px;font-weight:500;margin-top:2px;opacity:.95}
 .blk.off{cursor:default;opacity:.92}
@@ -215,21 +215,21 @@ function render(){
   $('#list').innerHTML = lh;
   fitNames();
 }
-/* 名稱塞不下格子就等比縮小（寬先、高次）；用 offsetWidth 量，不受手機縮放 transform 影響 */
+/* 名稱塞不下格子就用 transform 等比縮小（不用字級，避免被瀏覽器「最小字型」卡住）；量 offsetWidth 不受手機縮放影響 */
 function fitNames(){
   document.querySelectorAll('.blk').forEach(b => {
     const nm = b.querySelector('.nm'), tm = b.querySelector('.tm');
-    nm.style.fontSize = '';
-    const base = parseFloat(getComputedStyle(nm).fontSize), availW = b.clientWidth - 10, availH = b.clientHeight - 8;
-    let f = base;
-    if (nm.offsetWidth > availW) f = base * availW / nm.offsetWidth;
-    nm.style.fontSize = f.toFixed(2) + 'px';
-    const th = tm ? tm.offsetHeight : 0;
-    if (nm.offsetHeight + th > availH && nm.offsetHeight > 0) nm.style.fontSize = (f * Math.max(availH - th, 8) / nm.offsetHeight).toFixed(2) + 'px';
+    nm.style.transform = ''; nm.style.height = '';
+    const w = nm.offsetWidth, h = nm.offsetHeight;
+    if (!w || !h) return;
+    const availW = b.clientWidth - 10, availH = b.clientHeight - 8 - (tm ? tm.offsetHeight + 2 : 0);
+    const k = Math.min(1, availW / w, availH / h);
+    if (k < 1) { nm.style.transform = `scale(${k.toFixed(3)})`; nm.style.height = (h * k).toFixed(1) + 'px'; }
   });
 }
 addEventListener('resize', fitNames);
 if (document.fonts) document.fonts.ready.then(fitNames);
+addEventListener('load', fitNames);
 function openBand(it){
   cur = it;
   const card = $('#card'); card.style.setProperty('--sc', `var(--c${it.stage})`);
