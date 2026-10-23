@@ -63,7 +63,6 @@ header{text-align:center;padding:max(10px,env(safe-area-inset-top)) 16px 24px;po
 .legend{display:flex;justify-content:center;align-items:center;gap:14px;font-size:13px;color:var(--muted);margin:6px 0 12px;flex-wrap:wrap}
 .legend .chip{display:inline-flex;align-items:center;gap:6px}
 .legend i{width:14px;height:14px;border-radius:4px;background:var(--gold);box-shadow:0 0 8px 2px var(--gold)}
-html:not(.tz) .legend .pinch{display:none}
 /* 觸控：頁面不捲，#main 自己捲；時間表等比縮放 */
 .tz{--ppm:2.4px}
 .tz,.tz body{touch-action:pan-x pan-y}
@@ -153,7 +152,7 @@ ol.vids{list-style:none;margin:0;padding:10px 16px 16px;display:grid;gap:8px}
       <button class="tab" role="tab" data-day="2"><b>DAY 2</b>11.08 日</button>
     </div>
     <div class="legend">
-      <span class="chip"><i></i>標記想聽會亮起</span><span class="chip pinch">雙指可放大</span>
+      <span class="chip"><i></i>標記想聽 團會亮起</span>
       <button id="onlyWant" aria-pressed="false">只顯示想聽的團</button>
     </div>
     <div class="views"><button data-v="grid" aria-pressed="true">時間表</button><button data-v="list" aria-pressed="false">列表</button></div>
@@ -328,6 +327,7 @@ const setView = v => { view = v; document.body.classList.toggle('mode-list', v =
 document.querySelectorAll('.views button').forEach(b => b.onclick = () => setView(b.dataset.v));
 setView(view);
 render(); setHH(); fitZoom();
+$('#main').addEventListener('scroll', () => { $('.foot').style.transform = `translateX(${$('#main').scrollLeft}px)`; }, { passive: true });
 $('#hdrBtn').onclick = () => { const on = document.body.classList.toggle('hdr-hide'); $('#hdrBtn').setAttribute('aria-label', on ? '展開頁首' : '收合頁首'); setHH(); };
 $('header').addEventListener('wheel', e => $('#main').scrollBy(e.deltaX, e.deltaY), { passive: true });
 if (!TZ) { addEventListener('resize', setHH); if (window.ResizeObserver) new ResizeObserver(setHH).observe($('header')); if (document.fonts) document.fonts.ready.then(setHH); }
