@@ -139,6 +139,8 @@ ol.vids{list-style:none;margin:0;padding:10px 16px 16px;display:grid;gap:8px}
 .vid .vw a{color:var(--gold);margin-left:8px}
 .note{padding:0 16px 14px;color:var(--muted);font-size:12px}
 .note a{color:var(--gold)}
+.foot{max-width:1100px;margin:28px auto 0;text-align:center;color:var(--muted);font-size:12px;line-height:1.8}
+.foot .by{display:block;margin-top:10px;font-family:Bungee,sans-serif;letter-spacing:1px;color:var(--gold);opacity:.8}
 @media (max-width:520px){.vid{grid-template-columns:22px 96px 1fr}.vid img{width:96px}}
 </style>
 </head>
@@ -151,13 +153,14 @@ ol.vids{list-style:none;margin:0;padding:10px 16px 16px;display:grid;gap:8px}
       <button class="tab" role="tab" data-day="2"><b>DAY 2</b>11.08 日</button>
     </div>
     <div class="legend">
-      <span class="chip"><i></i>發亮＝想聽</span><span class="chip pinch">雙指可放大</span>
-      <button id="onlyWant" aria-pressed="false">只看想聽</button>
+      <span class="chip"><i></i>標記想聽會亮起</span><span class="chip pinch">雙指可放大</span>
+      <button id="onlyWant" aria-pressed="false">只顯示想聽的團</button>
     </div>
     <div class="views"><button data-v="grid" aria-pressed="true">時間表</button><button data-v="list" aria-pressed="false">列表</button></div>
     <button class="hdrbtn" id="hdrBtn" aria-label="收合頁首"></button>
   </header>
-  <div id="main"><div class="scroller"><div class="sizer" id="sizer"><div class="board" id="board"></div></div></div><div class="list" id="list"></div></div>
+  <div id="main"><div class="scroller"><div class="sizer" id="sizer"><div class="board" id="board"></div></div></div><div class="list" id="list"></div>
+    <footer class="foot">加到主畫面：<br>iPhone 用 Safari 分享 →「加入主畫面」<br>Android 用 Chrome 選單 →「安裝應用程式」。<br><span class="by">Made by Ming</span></footer></div>
 </div>
 <dialog id="dlg"><div class="card" id="card">
   <div class="card-h"><h2 id="dName"></h2><p id="dInfo"></p><button class="x" id="dClose" aria-label="關閉">×</button></div>
